@@ -13,12 +13,12 @@ export function InfoDialog(props: InfoDialogProps): JSX.Element {
   };
 
   if (props.content === undefined) {
-    return null;
+    return <div> </div>;
   }
 
   return (
     <div>
-      <Dialog title="timel.app" icon={<InfoSign />} isOpen={true}>
+      <Dialog title="Tasting" icon={<InfoSign />} isOpen={true}>
         <DialogBody>{props.content}</DialogBody>
         <DialogFooter
           minimal={true}

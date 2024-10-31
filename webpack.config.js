@@ -4,6 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { GenerateSW } = require("workbox-webpack-plugin");
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const Dotenv = require("dotenv-webpack");
 
 const isDevServer = process.argv.includes("serve");
 console.log("Is dev server", isDevServer);
@@ -15,6 +16,9 @@ const plugins = [
   }),
   new CopyPlugin({
     patterns: [{ from: "src/assets", to: "" }],
+  }),
+  new Dotenv({
+    path: "./variables.env",
   }),
   // new BundleAnalyzerPlugin(),
 ];
@@ -38,6 +42,9 @@ module.exports = {
     port: 3030,
     devMiddleware: {
       writeToDisk: true,
+    },
+    server: {
+      //type: "https",
     },
   },
   resolve: {

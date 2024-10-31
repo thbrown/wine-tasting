@@ -1,3 +1,8 @@
+@import "normalize.css/normalize.css";
+
+@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+
 .wrapper {
   max-width: 760px;
   margin: 0 auto;
@@ -8,4 +13,62 @@
   padding-left: 5px;
   padding-right: 5px;
   width: 100%;
+}
+
+.directory {
+  display: flex;
+  flex-direction: column;
+}
+
+.qr-code-wrapper {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.qr-code-text {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.center-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.standard-padding {
+  padding: 10px;
+}
+
+.button {
+  margin: 20px;
+}
+
+.code {
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  color: #666;
+  page-break-inside: avoid;
+  font-family: monospace;
+  overflow: auto;
+  padding: 0.2em;
+  display: block;
+  word-wrap: break-word;
+}
+
+.full-height {
+  height: 100vh;
 }
