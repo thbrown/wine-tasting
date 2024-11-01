@@ -3,8 +3,13 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import "./Routes.scss";
 import { joinRoom, Room } from "trystero/firebase";
 import { ParentConnected } from "./parent-connected";
-import { LocalInfo, Wine } from "./types/local-info-types";
-import { createNewRoom, getWords, toUrlPath } from "./utils/generic-utils";
+import {
+  LocalInfo,
+  LocalInfoHost,
+  LocalInfoTaster,
+  Wine,
+} from "./types/local-info-types";
+import { createNewHostRoom, getWords, toUrlPath } from "./utils/generic-utils";
 import { useNavigate } from "react-router-dom";
 
 import { useLocation } from "react-router-dom";
@@ -13,29 +18,26 @@ import {
   OutletContextBase,
 } from "./types/context-types";
 import { ConnectingCard } from "./shared-components/connecting-card";
-import { v4 as uuidv4 } from "uuid";
 
 const APP_ID = process.env.REACT_APP_APP_ID || "default_value";
 export const CONNECTION_SPEC_LS_KEY = "connectionSpec";
-const LOCAL_INFO_LS_KEY = "localInfo";
+export const LOCAL_INFO_LS_KEY = "localInfo";
 
 const getConnectionSpecFromStorage = () => {
   const stored = localStorage.getItem(CONNECTION_SPEC_LS_KEY);
+  console.log("Got connection spec from storage", stored);
   return stored ? JSON.parse(stored) : null;
 };
 
-const getLocalInfoFromStorage = () => {
-  if (useLocation().pathname === "/connect") {
-    return { type: "host" };
-  }
+const getLocalInfoFromStorage = (): LocalInfo => {
   const stored = localStorage.getItem(LOCAL_INFO_LS_KEY);
-  return stored
-    ? JSON.parse(stored)
-    : {
-        type: "host",
-        qrId: getWords(3),
-        qrPwd: uuidv4(),
-      };
+  console.log("Got local inf from storage", stored);
+
+  if (stored) {
+    return JSON.parse(stored) as LocalInfo;
+  } else {
+    return { type: "none" };
+  }
 };
 
 export const Parent = () => {
@@ -59,6 +61,7 @@ export const Parent = () => {
   }, [connectionSpec]);
 
   useEffect(() => {
+    console.log("Setting local info");
     localStorage.setItem(LOCAL_INFO_LS_KEY, JSON.stringify(localInfo));
   }, [localInfo]);
 
@@ -68,13 +71,10 @@ export const Parent = () => {
       switchRoom(connectionSpec);
       setLocalInfo(localInfo);
       setLocalStorageLoadComplete(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (connectionSpec == null) {
-      const newRoom = createNewRoom();
-      const newRoomUrl = toUrlPath(newRoom);
+    } else {
+      // Need to go to connect page first
+      const newRoom = createNewHostRoom();
+      const newRoomUrl = toUrlPath(newRoom, true);
       navigate(newRoomUrl);
     }
   }, []);

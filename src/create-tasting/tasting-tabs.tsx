@@ -4,15 +4,18 @@ import { WineInputForm } from "../shared-components/wine-input-form";
 import { Button, Card, Dialog, Tab, Tabs } from "@blueprintjs/core";
 
 import { useOutletContext } from "react-router-dom";
-import { OutletContext } from "../parent";
 import { useNavigate } from "react-router-dom";
-import { createNewRoom } from "../utils/generic-utils";
+import {
+  createNewHostRoom,
+  getFreshLocalInfoHost,
+} from "../utils/generic-utils";
 import { QRCode } from "./tasters-qr-code";
 import { WineCard } from "../shared-components/wine-card";
+import { OutletContextConnected } from "../types/context-types";
 
 export const CreateTastingTabs = () => {
   const navigate = useNavigate();
-  const context = useOutletContext<OutletContext>();
+  const context = useOutletContext<OutletContextConnected>();
   const { localInfo, switchRoom, connectionSpec } = context;
 
   const [selectedTab, setSelectedTab] = useState<string | number>("form");
@@ -21,10 +24,9 @@ export const CreateTastingTabs = () => {
   const handleContinue = () => {
     setIsOpen(false);
     localStorage.clear();
-    if (context.connectionStatus === "connected") {
-      context.clearTimers();
-    }
-    const room = createNewRoom();
+    context.clearTimers();
+    context.setLocalInfo(getFreshLocalInfoHost());
+    const room = createNewHostRoom();
     switchRoom(room, true);
   };
 

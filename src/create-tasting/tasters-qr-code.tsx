@@ -1,7 +1,7 @@
 import { Card } from "@blueprintjs/core";
 import React, { useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import { OutletContext } from "../parent";
+import { OutletContextBase } from "../types/context-types";
 import { TastersList } from "./tasters-list";
 import { TastersInstructions } from "./tasters-instructions";
 import { QRCodeSVG } from "qrcode.react";
@@ -9,14 +9,20 @@ import { Divider } from "@blueprintjs/core";
 
 // Instructions component for wine tasting
 export const QRCode = () => {
-  const context = useOutletContext<OutletContext>();
+  const context = useOutletContext<OutletContextBase>();
+
+  if (context.localInfo.type !== "host") {
+    return (
+      <Card className={"center"}>
+        <h3>Page only valid for hosts</h3>
+      </Card>
+    );
+  }
 
   const connectionSpec = context.connectionSpec;
 
-  const QRurl =
-    context.connectionStatus === "connected"
-      ? `http://localhost:3030/#/connect?roomId=${connectionSpec.roomId}&roomPwd=${connectionSpec.roomPwd}&localId=${context.qrId}&localPwd=${context.qrPwd}`
-      : "no-connection";
+  const QRurl = `/#/connect?roomId=${connectionSpec.roomId}&roomPwd=${connectionSpec.roomPwd}&localId=${context.localInfo.qrId}&localPwd=${context.localInfo.qrPwd}`;
+
   useMemo(() => {
     // For local development we might not be able to use the QR code
     console.log("QR code url", QRurl);
@@ -51,7 +57,7 @@ export const QRCode = () => {
           <QRCodeSVG value={QRurl} size={150} />
         )}
         <div className={"qr-code-text"}>
-          <a href={QRurl}>link</a> | {context.qrId}
+          <a href={QRurl}>link</a> | {context.localInfo.qrId}
         </div>
       </div>
     </div>

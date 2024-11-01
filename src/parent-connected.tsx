@@ -12,6 +12,7 @@ import {
   OutletContextConnected,
 } from "./types/context-types";
 import { ConnectingCard } from "./shared-components/connecting-card";
+import { LocalInfoTaster, Wine } from "./types/local-info-types";
 
 const QUEUED_MESSAGES_LS_KEY = "messagesToSend";
 
@@ -38,11 +39,32 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
     for (const key in messagesToSend) {
       kickQueue(key);
     }
-
     return () => {
       console.log("Clearing all timers");
     };
   });
+
+  useEffect(() => {
+    if (
+      props.baseContext.localInfo.type === "taster" &&
+      confirmedConnectedLocalId !== props.baseContext.connectionSpec.localId
+    ) {
+      console.log(
+        "Requesting connection",
+        confirmedConnectedLocalId,
+        props.baseContext.connectionSpec.localId
+      );
+      sendMessage({
+        id: uuidv4(),
+        target: "host",
+        source: props.baseContext.connectionSpec.localId,
+        direction: "request",
+        data: {
+          type: "clientRequestConnection",
+        },
+      });
+    }
+  }, []);
 
   // Keep message queue in sync with ls
   useEffect(() => {
@@ -80,28 +102,6 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
     }));
     kickQueue(targetId);
   };
-
-  /*
-      if (context.connectionStatus === "disconnected") {
-        console.log("All connection details provided", connectSpec);
-        switchRoom(connectSpec, false);
-      } else {
-        if (context.connectionSpec.localId !== localId) {
-          context.clearTimers();
-          context.switchRoom(connectSpec, false);
-        }
-        context.sendMessage({
-          id: uuidv4(),
-          target: "host",
-          source: localId,
-          direction: "request",
-          data: {
-            type: "clientRequestConnection",
-          },
-        });
-        navigate("/taste-info");
-      }
-        */
 
   /**
    * Send a message to the targetId if there is a message queued and if there is not already a message being sent
@@ -151,10 +151,9 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
     if (msg.target === props.baseContext.connectionSpec.localId) {
       if (props.baseContext.localInfo.type === "host") {
         if (msg.data.type === "clientRequestConnection") {
-          if (props.baseContext.localInfo.qrId === msg.source) {
-            maybeUpdateQrCode();
-          }
-          // TODO: update taster list
+          //if (props.baseContext.localInfo.qrId === msg.source) {
+          //  maybeUpdateQrCode();
+          //}
           console.log("Host sending message to", msg.source);
           sendMessage({
             id: uuidv4(),
@@ -165,6 +164,38 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
             data: {
               type: "hostResponseConnection",
               wines: props.baseContext.localInfo.wines,
+            },
+          });
+          const newTasterId = msg.source;
+          props.baseContext.setLocalInfo({
+            ...props.baseContext.localInfo,
+            qrId: getWords(3),
+            qrPwd: uuidv4(),
+            tasters: {
+              ...props.baseContext.localInfo.tasters,
+              [newTasterId]: {},
+            },
+          });
+          return;
+        }
+        if (msg.data.type === "clientPushInfo") {
+          console.log("Host got clientPushInfo", msg.data.info);
+          sendMessage({
+            id: uuidv4(),
+            target: msg.source,
+            source: props.baseContext.connectionSpec.localId,
+            direction: "response",
+            requestMessageId: msg.id,
+            data: {
+              type: "hostResponseLocalInfo",
+            },
+          });
+          const newTasterId = msg.source;
+          props.baseContext.setLocalInfo({
+            ...props.baseContext.localInfo,
+            tasters: {
+              ...props.baseContext.localInfo.tasters,
+              [newTasterId]: msg.data.info,
             },
           });
           return;
@@ -180,10 +211,14 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
           setConfirmedConnectedLocalId(
             props.baseContext.connectionSpec.localId
           );
-          setLocalInfo({
+          props.baseContext.setLocalInfo({
             ...props.baseContext.localInfo,
             winesToTaste: msg.data.wines,
           });
+          return;
+        } else if (msg.data.type === "hostResponseLocalInfo") {
+          console.log("hostResponseLocalInfo");
+          // INTENTIONALLY LEFT BLANK
           return;
         } else {
           console.warn("Non-host got unhandled message", msg.data.type, msg);
@@ -193,22 +228,24 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
       console.warn(
         "This message is not for me (I will ignore)",
         msg.target,
-        msg
+        props.baseContext.connectionSpec.localId
       );
     }
   });
-  const [qrId, setQrId] = useState<string>(getWords(3));
-  const [qrPwd, setQrPwd] = useState<string>(uuidv4());
 
+  /*
   const maybeUpdateQrCode = () => {
     if (props.baseContext.localInfo.type === "host") {
-      setLocalInfo({
+      const newValue = {
         ...props.baseContext.localInfo,
         qrId: getWords(3),
         qrPwd: uuidv4(),
-      });
+      };
+      console.log("Updating qr code", newValue);
+      props.baseContext.setLocalInfo(newValue);
     }
   };
+  */
 
   const fullContext: OutletContextConnected = {
     ...props.baseContext,
@@ -230,12 +267,3 @@ export const ParentConnected = (props: { baseContext: OutletContextBase }) => {
     </div>
   );
 };
-function setLocalInfo(arg0: {
-  qrId: string;
-  qrPwd: string;
-  type: "host";
-  wines: import("./types/local-info-types").Wine[];
-  tasters: import("./types/local-info-types").LocalInfoTaster[];
-}) {
-  throw new Error("Function not implemented.");
-}

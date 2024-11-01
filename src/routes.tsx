@@ -35,7 +35,7 @@ const router = createHashRouter([
               <Link to="/create-tasting">Create Tasting</Link>
               <Link to="/signup">Signup</Link>
               <Link to="/taste">Taste</Link>
-              <Link to="/taste-info">Taste Info</Link>
+              <Link to="/taster-info">Taste Info</Link>
               <Link to="/progress">Progress</Link>
             </div>
           </div>
@@ -54,7 +54,7 @@ const router = createHashRouter([
         element: <Taste />,
       },
       {
-        path: "taste-info",
+        path: "taster-info",
         element: <LocalInfoTasterWrapper />,
       },
       {

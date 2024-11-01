@@ -1,9 +1,16 @@
 import { Card, Spinner } from "@blueprintjs/core";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { CONNECTION_SPEC_LS_KEY } from "../parent";
+import { CONNECTION_SPEC_LS_KEY, LOCAL_INFO_LS_KEY } from "../parent";
 import { useNavigate } from "react-router-dom";
 import { ConnectionSpecification } from "../types/context-types";
+import { LocalInfoHost, LocalInfoTaster } from "../types/local-info-types";
+import {
+  getFreshLocalInfoHost,
+  getFreshLocalInfoTaster,
+  getWords,
+} from "../utils/generic-utils";
+import { v4 as uuidv4 } from "uuid";
 
 export const Connect = () => {
   const navigate = useNavigate();
@@ -35,12 +42,25 @@ export const Connect = () => {
   }, [queryParams]);
 
   useEffect(() => {
+    const isHost = queryParams.get("isHost");
     if (connectSpec == null) {
       console.log("Invalid connection details", connectSpec);
       setStatus("FAILURE");
     } else {
       localStorage.setItem(CONNECTION_SPEC_LS_KEY, JSON.stringify(connectSpec));
-      navigate("/create-tasting");
+      if (isHost) {
+        localStorage.setItem(
+          LOCAL_INFO_LS_KEY,
+          JSON.stringify(getFreshLocalInfoHost())
+        );
+        navigate("/create-tasting");
+      } else {
+        localStorage.setItem(
+          LOCAL_INFO_LS_KEY,
+          JSON.stringify(getFreshLocalInfoTaster())
+        );
+        navigate("/taster-info");
+      }
     }
   }, []);
 

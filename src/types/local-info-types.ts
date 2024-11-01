@@ -25,14 +25,14 @@ export type LocalInfoTaster = {
   gender?: "M" | "F";
   age?: number;
   wineExperience?: "none" | "some" | "lots";
-  winesToTaste;
+  winesToTaste: Wine[];
   wineTastings: WineTasting[];
 };
 
 export type LocalInfoHost = {
   type: "host";
   wines: Wine[];
-  tasters: LocalInfoTaster[];
+  tasters: Record<string, LocalInfoTaster | {}>;
   qrId: string;
   qrPwd: string;
 };

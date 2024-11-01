@@ -1,13 +1,13 @@
-import { ConnectionSpecification } from "../parent";
 import { v4 as uuidv4 } from "uuid";
 import { generate } from "random-words";
+import { ConnectionSpecification } from "../types/context-types";
+import { LocalInfoHost, LocalInfoTaster } from "../types/local-info-types";
 
 export const assertNever = (value: never): never => {
   throw new Error(`Unexpected value: ${value}`);
 };
 
-// Move this to a util?
-export const createNewRoom = (): ConnectionSpecification => {
+export const createNewHostRoom = (): ConnectionSpecification => {
   console.log("Creating new room");
   return {
     roomId: getWords(3),
@@ -15,6 +15,27 @@ export const createNewRoom = (): ConnectionSpecification => {
     localId: "host",
     localPwd: uuidv4(),
   };
+};
+
+export const getFreshLocalInfoHost = (): LocalInfoHost => {
+  const newLocalInfo: LocalInfoHost = {
+    type: "host",
+    qrId: getWords(3),
+    qrPwd: uuidv4(),
+    wines: [],
+    tasters: {},
+  };
+  return newLocalInfo;
+};
+
+export const getFreshLocalInfoTaster = (): LocalInfoTaster => {
+  const newLocalInfo: LocalInfoTaster = {
+    type: "taster",
+    name: "",
+    winesToTaste: [],
+    wineTastings: [],
+  };
+  return newLocalInfo;
 };
 
 export const getWords = (count: number): string => {
@@ -37,6 +58,9 @@ export const getNextLetter = (index: number): string => {
   return result;
 };
 
-export const toUrlPath = (connectionSpec: ConnectionSpecification): string => {
-  return `/connect?roomId=${connectionSpec.roomId}&roomPwd=${connectionSpec.roomPwd}&localId=${connectionSpec.qrId}&localPwd=${connectionSpec.qrPwd}`;
+export const toUrlPath = (
+  connectionSpec: ConnectionSpecification,
+  isHost: boolean
+): string => {
+  return `/connect?roomId=${connectionSpec.roomId}&roomPwd=${connectionSpec.roomPwd}&localId=${connectionSpec.localId}&localPwd=${connectionSpec.localPwd}&isHost=${isHost}`;
 };
