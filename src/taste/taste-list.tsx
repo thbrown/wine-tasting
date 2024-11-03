@@ -207,8 +207,8 @@ const SortableItem = ({
         {...attributes}
         className={"spaced-row"}
       >
-        <div {...listeners} style={{ width: "50px", height: "50px" }}>
-          <Icon size={48} icon="drag-handle-vertical" />
+        <div {...listeners} style={{ width: "50px", height: "150px" }}>
+          <Icon size={150} icon="drag-handle-vertical" />
         </div>
         <div>
           <div>

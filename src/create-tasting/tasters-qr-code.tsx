@@ -21,7 +21,7 @@ export const QRCode = () => {
 
   const connectionSpec = context.connectionSpec;
 
-  const QRurl = `/#/connect?roomId=${connectionSpec.roomId}&roomPwd=${connectionSpec.roomPwd}&localId=${context.localInfo.qrId}&localPwd=${context.localInfo.qrPwd}`;
+  const QRurl = `https://thbrown.github.io/wine-tasting/#/connect?roomId=${connectionSpec.roomId}&roomPwd=${connectionSpec.roomPwd}&localId=${context.localInfo.qrId}&localPwd=${context.localInfo.qrPwd}`;
 
   useMemo(() => {
     // For local development we might not be able to use the QR code
