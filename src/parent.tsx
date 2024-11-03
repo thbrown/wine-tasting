@@ -61,7 +61,7 @@ export const Parent = () => {
   }, [connectionSpec]);
 
   useEffect(() => {
-    console.log("Setting local info");
+    console.log("Setting local info", JSON.stringify(localInfo));
     localStorage.setItem(LOCAL_INFO_LS_KEY, JSON.stringify(localInfo));
   }, [localInfo]);
 

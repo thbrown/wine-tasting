@@ -31,9 +31,10 @@ export const LocalInfoTasterWrapper: React.FC<
           data: {
             type: "clientPushInfo",
             info: taster,
+            nextPage: "/taste",
           },
         });
-        navigate("/taste");
+        context.setLocalInfo(taster);
       }}
       taster={context.localInfo}
     />

@@ -1,4 +1,4 @@
-import { LocalInfoTaster } from "./local-info-types";
+import { LocalInfoTaster, WineTasting } from "./local-info-types";
 import { Wine } from "./local-info-types";
 
 // TODO: for proper security we'd want to use some form of message encryption so the host can't be faked by clients
@@ -28,21 +28,25 @@ export interface ClientRequestConnection {
 }
 export interface HostResponseConnection {
   type: "hostResponseConnection";
-  wines: Wine[];
+  wines: Record<string, Wine>;
 }
 
 export interface ClientPushLocalInfo {
   type: "clientPushInfo";
   info: LocalInfoTaster;
+  nextPage: string | null;
 }
 export interface HostResponseLocalInfo {
   type: "hostResponseLocalInfo";
+  nextPage: string | null;
 }
 
-export interface ClientPushResults {
-  type: "clientPushResults";
-  results: LocalInfoTaster[];
+/*
+export interface ClientPushTastings {
+  type: "clientPushTastings";
+  tastings: WineTasting[];
 }
-export interface HostResponseResults {
-  type: "hostResponseResults";
+export interface HostResponseTastings {
+  type: "hostResponseTastings";
 }
+*/

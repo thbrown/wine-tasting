@@ -27,7 +27,7 @@ const renderFlavorTag = (flavor: string) => flavor;
 
 // Props for the component
 type WineInputFormProps = {
-  wines: Wine[];
+  wines: Record<string, Wine>;
   onSubmit: (wine: Wine) => void;
   isTaster: boolean;
 };
@@ -37,10 +37,12 @@ export const WineInputForm: React.FC<WineInputFormProps> = ({
   onSubmit,
   isTaster,
 }) => {
+  const wineList = Object.values(wines);
+
   // States for form fields
-  const [identifier, setIdentifier] = useState(
-    "Wine " + getNextLetter(wines.length)
-  );
+  // const [identifier, setIdentifier] = useState(
+  //  "Wine " + getNextLetter(wineList.length)
+  //);
   const [nickname, setNickname] = useState("");
   const [notes, setNotes] = useState("");
   const [name, setName] = useState("");
@@ -51,59 +53,62 @@ export const WineInputForm: React.FC<WineInputFormProps> = ({
   const [points, setPoints] = useState<number | null>(null);
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
 
+  /*
   useEffect(() => {
-    setIdentifier("Wine " + getNextLetter(wines.length));
-  }, [wines]);
+    console.log("SETTING IDENTIGIER", wines.length);
+    setIdentifier("Wine " + getNextLetter(wineList.length));
+  }, [wines.length]);
+
+  console.log("RENDER WINEINPUT FORM", wines);
+  */
+
+  const identifier = "Wine " + getNextLetter(wineList.length);
 
   // Derive unique options from wines array or set to empty arrays for free-form entry
   const pointsOptions = wines
-    ? Array.from(new Set(wines.map((wine) => wine.points)))
+    ? Array.from(new Set(wineList.map((wine) => wine.points)))
     : [];
   const yearOptions = wines
-    ? Array.from(new Set(wines.map((wine) => wine.year)))
+    ? Array.from(new Set(wineList.map((wine) => wine.year)))
     : [];
   const varietalOptions = wines
-    ? Array.from(new Set(wines.map((wine) => wine.varietal)))
+    ? Array.from(new Set(wineList.map((wine) => wine.varietal)))
     : [];
   const regionOptions = wines
-    ? Array.from(new Set(wines.map((wine) => wine.region)))
+    ? Array.from(new Set(wineList.map((wine) => wine.region)))
     : [];
   const priceOptions = wines
-    ? Array.from(new Set(wines.map((wine) => wine.price)))
+    ? Array.from(new Set(wineList.map((wine) => wine.price)))
     : [];
   const flavorOptions = wines
-    ? Array.from(new Set(wines.flatMap((wine) => wine.flavors)))
+    ? Array.from(new Set(wineList.flatMap((wine) => wine.flavors)))
     : [];
 
   // Handle form submission
   const handleSubmit = () => {
-    if (identifier) {
-      const newWine: Wine = {
-        identifier,
-        name,
-        points,
-        year,
-        varietal,
-        region,
-        price,
-        flavors: selectedFlavors,
-      };
+    const newWine: Wine = {
+      identifier,
+      name,
+      points,
+      year,
+      varietal,
+      region,
+      price,
+      flavors: selectedFlavors,
+    };
 
-      onSubmit(newWine);
+    onSubmit(newWine);
 
-      // Clear form after submission
-      setNickname("");
-      setNotes("");
-      setName("");
-      setYear(null);
-      setVarietal("");
-      setRegion("");
-      setPrice(null);
-      setPoints(null);
-      setSelectedFlavors([]);
-    } else {
-      alert("Missing identifier");
-    }
+    // Clear form after submission
+    setNickname("");
+    setNotes("");
+    setName("");
+    setYear(null);
+    setVarietal("");
+    setRegion("");
+    setPrice(null);
+    setPoints(null);
+    setSelectedFlavors([]);
   };
 
   return (
@@ -118,14 +123,14 @@ export const WineInputForm: React.FC<WineInputFormProps> = ({
           disabled={true}
           id="identifier-input"
           value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          //onChange={(e) => setIdentifier(e.target.value)}
         />
       </FormGroup>
 
       <FormGroup label="Name" labelFor="name-input">
         <InputGroup
           id="name-input"
-          value={identifier}
+          //value={identifier}
           onChange={(e) => setName(e.target.value)}
         />
       </FormGroup>

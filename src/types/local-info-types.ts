@@ -12,6 +12,7 @@ export type Wine = {
 };
 
 export type WineTasting = {
+  wineId: string;
   nickname: string;
   notes: string;
   points: number;
@@ -25,13 +26,13 @@ export type LocalInfoTaster = {
   gender?: "M" | "F";
   age?: number;
   wineExperience?: "none" | "some" | "lots";
-  winesToTaste: Wine[];
+  winesToTaste: Record<string, Wine>;
   wineTastings: WineTasting[];
 };
 
 export type LocalInfoHost = {
   type: "host";
-  wines: Wine[];
+  wines: Record<string, Wine>;
   tasters: Record<string, LocalInfoTaster | {}>;
   qrId: string;
   qrPwd: string;

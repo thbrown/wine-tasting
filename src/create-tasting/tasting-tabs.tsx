@@ -12,14 +12,16 @@ import {
 import { QRCode } from "./tasters-qr-code";
 import { WineCard } from "../shared-components/wine-card";
 import { OutletContextConnected } from "../types/context-types";
+import { TasterScore } from "./tasters-score";
 
 export const CreateTastingTabs = () => {
   const navigate = useNavigate();
   const context = useOutletContext<OutletContextConnected>();
-  const { localInfo, switchRoom, connectionSpec } = context;
+  const { localInfo, switchRoom } = context;
 
   const [selectedTab, setSelectedTab] = useState<string | number>("form");
-  const [isOpen, setIsOpen] = React.useState(localInfo.type === "none");
+  const [isOpen, setIsOpen] = React.useState(localInfo.type === "none"); // TODO: false?
+  const [isScoreDialogOpen, setIsScoreDialogOpen] = React.useState(false);
 
   const handleContinue = () => {
     setIsOpen(false);
@@ -39,6 +41,14 @@ export const CreateTastingTabs = () => {
 
   const onCreateNewTasting = () => {
     setIsOpen(true);
+  };
+
+  const onScoreTasting = () => {
+    setIsScoreDialogOpen(true);
+  };
+
+  const handleScoreCancel = () => {
+    setIsScoreDialogOpen(false);
   };
 
   const renderNewTastingPrompt = () => {
@@ -75,6 +85,32 @@ export const CreateTastingTabs = () => {
     );
   };
 
+  const renderScoringDialog = () => {
+    return (
+      <Dialog
+        isOpen={isScoreDialogOpen}
+        onClose={handleScoreCancel}
+        title="Start New Tasting Event"
+      >
+        <div className={"center standard-padding"}>
+          <div className="bp4-dialog-body">
+            <p>Here are the scores!</p>
+            <TasterScore />
+          </div>
+          <div className="bp4-dialog-footer">
+            <Button
+              className="button"
+              intent="primary"
+              onClick={handleScoreCancel}
+            >
+              Close Scores
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+    );
+  };
+
   if (context.localInfo.type !== "host") {
     return <div>Only hosts can create a tasting</div>;
   }
@@ -97,9 +133,17 @@ export const CreateTastingTabs = () => {
                   >
                     Create new tasting (delete current)
                   </Button>
+                  <Button
+                    icon="endorsed"
+                    intent={"warning"}
+                    onClick={onScoreTasting}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    End and score tasting
+                  </Button>
                 </div>
                 <div>
-                  {context.localInfo.wines.map((wine, index) => (
+                  {Object.values(context.localInfo.wines).map((wine, index) => (
                     <WineCard wine={wine} key={"wine" + index} />
                   ))}
                 </div>
@@ -113,19 +157,19 @@ export const CreateTastingTabs = () => {
                     console.log("Submitted", wineValue);
                     if (context.localInfo.type === "host") {
                       console.log("Updating", context.localInfo);
+                      const newWines = context.localInfo.wines;
+                      newWines[wineValue.identifier] = wineValue;
 
                       context.setLocalInfo({
                         ...context.localInfo,
-                        wines:
-                          context.localInfo.wines == null
-                            ? [wineValue]
-                            : [...context.localInfo.wines, wineValue],
+                        wines: newWines,
                       });
                     }
                   }}
                 />
               </Card>
               {renderNewTastingPrompt()}
+              {renderScoringDialog()}
             </>
           }
         />

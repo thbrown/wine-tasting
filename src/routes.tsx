@@ -11,11 +11,8 @@ import "./Routes.scss";
 import { CreateTastingTabs } from "./create-tasting/tasting-tabs";
 import { Parent } from "./parent";
 import { Connect } from "./connect/connect";
-import { Taste } from "./taste/taste";
-import { LocalInfoTasterForm } from "./taste/taste-info";
-import TasterInfoWrapper, {
-  LocalInfoTasterWrapper,
-} from "./taste/taster-info-wrapper";
+import { TasteList } from "./taste/taste-list";
+import { LocalInfoTasterWrapper } from "./taste/taster-info-wrapper";
 
 const router = createHashRouter([
   {
@@ -51,7 +48,7 @@ const router = createHashRouter([
       },
       {
         path: "taste",
-        element: <Taste />,
+        element: <TasteList />,
       },
       {
         path: "taster-info",

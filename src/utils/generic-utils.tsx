@@ -22,7 +22,7 @@ export const getFreshLocalInfoHost = (): LocalInfoHost => {
     type: "host",
     qrId: getWords(3),
     qrPwd: uuidv4(),
-    wines: [],
+    wines: {},
     tasters: {},
   };
   return newLocalInfo;
@@ -32,7 +32,7 @@ export const getFreshLocalInfoTaster = (): LocalInfoTaster => {
   const newLocalInfo: LocalInfoTaster = {
     type: "taster",
     name: "",
-    winesToTaste: [],
+    winesToTaste: {},
     wineTastings: [],
   };
   return newLocalInfo;

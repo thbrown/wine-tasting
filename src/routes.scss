@@ -49,6 +49,14 @@
   flex-direction: row;
 }
 
+.spaced-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
 .standard-padding {
   padding: 10px;
 }
